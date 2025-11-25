@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SilverLife Companion</title>
+    <meta name="theme-color" content="#0d9488">
+    <meta name="description" content="Simple daily management for seniors">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght400;600;800&family=Digital+Numbers&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-screen overflow-hidden flex flex-col home-theme transition-all duration-500">
+
+    <div id="splash" class="fixed inset-0 bg-teal-600 z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-700">
+        <i class="fas fa-heart-pulse text-6xl mb-4"></i>
+        <h1 class="text-3xl font-bold">SilverLife</h1>
+        <p class="mt-2 text-teal-100">Loading...</p>
+    </div>
+
+    <div id="access-bar">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="font-bold text-lg text-gray-800">Accessibility</h3>
+            <button onclick="toggleAccessBar()" class="text-gray-500 text-xl"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="mb-5">
+            <p class="text-sm text-gray-600 mb-2 font-bold">Text Size</p>
+            <div class="flex gap-2">
+                <button onclick="setAccess('size', 'normal')" class="flex-1 bg-gray-200 text-gray-800 p-2 rounded text-sm hover:bg-gray-300">A</button>
+                <button onclick="setAccess('size', 'large')" class="flex-1 bg-gray-200 text-gray-800 p-2 rounded text-lg font-bold hover:bg-gray-300">A+</button>
+                <button onclick="setAccess('size', 'xl')" class="flex-1 bg-gray-200 text-gray-800 p-2 rounded text-xl font-bold hover:bg-gray-300">A++</button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <p class="text-sm text-gray-600 mb-2 font-bold">Display Mode</p>
+            <div class="space-y-2">
+                <button onclick="setAccess('mode', 'light')" class="w-full bg-white text-gray-800 p-3 rounded font-bold border border-gray-300 flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fas fa-sun text-yellow-500"></i> Light Mode
+                </button>
+                 <button onclick="setAccess('mode', 'dark')" class="w-full bg-gray-800 text-white p-3 rounded font-bold border border-gray-600 flex items-center justify-center gap-2">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+                <button onclick="setAccess('mode', 'contrast')" class="w-full bg-black text-yellow-400 p-3 rounded font-bold border-2 border-yellow-400 flex items-center justify-center gap-2">
+                    <i class="fas fa-adjust"></i> High Contrast
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <p class="text-sm text-gray-600 mb-2 font-bold">Voice Assistant</p>
+            <div class="flex gap-2">
+                <button onclick="readPage()" class="flex-1 bg-blue-100 text-blue-800 p-3 rounded font-bold flex items-center justify-center gap-2 hover:bg-blue-200">
+                    <i class="fas fa-volume-up"></i> Read
+                </button>
+                <button onclick="stopReading()" class="w-16 bg-red-100 text-red-800 p-3 rounded font-bold flex items-center justify-center hover:bg-red-200">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
+        </div>
+
+        <button onclick="setAccess('reset')" class="w-full bg-gray-200 text-gray-700 p-3 rounded font-bold mt-4 hover:bg-gray-300 border border-gray-300">
+            <i class="fas fa-undo mr-1"></i> Reset Settings
+        </button>
+    </div>
+
+    <div id="fake-call-screen" class="call-screen">
+        <div class="flex flex-col items-center w-full">
+            <div class="call-avatar pulse-ring">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2 id="call-name" class="text-3xl font-bold mb-2">Contact Name</h2>
+            <p id="call-status" class="text-gray-400 text-lg">Calling...</p>
+        </div>
+        
+        <div class="w-full flex justify-around items-center">
+            <button class="flex flex-col items-center opacity-50">
+                <div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center mb-2">
+                    <i class="fas fa-volume-up text-2xl"></i>
+                </div>
+                <span>Speaker</span>
+            </button>
+            <button class="flex flex-col items-center opacity-50">
+                <div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center mb-2">
+                    <i class="fas fa-video text-2xl"></i>
+                </div>
+                <span>Video</span>
+            </button>
+            <button class="flex flex-col items-center opacity-50">
+                <div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center mb-2">
+                    <i class="fas fa-microphone-slash text-2xl"></i>
+                </div>
+                <span>Mute</span>
+            </button>
+        </div>
+
+        <button onclick="endFakeCall()" class="bg-red-600 w-20 h-20 rounded-full flex items-center justify-center shadow-lg tap-effect mb-8">
+            <i class="fas fa-phone-slash text-3xl"></i>
+        </button>
+    </div>
+
+    <header class="bg-teal-600 text-white p-4 shadow-md z-30 sticky top-0 flex justify-between items-center h-16">
+        <h1 id="page-title" class="text-2xl font-bold truncate">SilverAging</h1>
+        <div class="flex gap-3">
+            <button onclick="toggleAccessBar()" class="bg-teal-700 w-10 h-10 rounded-full flex items-center justify-center tap-effect border border-teal-500 shadow-sm" aria-label="Accessibility Settings">
+                <i class="fas fa-eye text-lg"></i>
+            </button>
+            <button onclick="installApp()" id="install-btn" class="hidden text-xs bg-teal-800 px-3 py-1 rounded-full"><i class="fas fa-download mr-1"></i> Install</button>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar p-4 relative" id="app-container">
+        
+        <section id="home" class="page-section active">
+            <div class="bg-gray-800/90 text-white p-6 rounded-3xl shadow-lg mb-6 text-center border-4 border-gray-700 backdrop-blur-sm">
+                <div class="text-gray-300 text-lg uppercase tracking-widest mb-1" id="clock-date">Mon, Jan 1</div>
+                <div class="text-6xl font-bold digital-font text-teal-300 tracking-wider" id="clock-time">12:00</div>
+                <div class="text-gray-300 text-xl mt-1" id="clock-ampm">PM</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="nav('shop')" class="tap-effect bg-lime-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-lime-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-lime-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <span class="font-bold text-lg text-lime-900">Shop List</span>
+                </button>
+
+                <button onclick="nav('wellness')" class="tap-effect bg-pink-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-pink-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-pink-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <span class="font-bold text-lg text-pink-900">Exercise</span>
+                </button>
+
+                <button onclick="nav('contacts')" class="tap-effect bg-green-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-green-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <span class="font-bold text-lg text-green-900">Call</span>
+                </button>
+
+                <button onclick="nav('meds')" class="tap-effect bg-blue-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-blue-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <span class="font-bold text-lg text-blue-900">Meds</span>
+                </button>
+                
+                 <button onclick="nav('schedule')" class="tap-effect bg-indigo-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-indigo-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-indigo-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <span class="font-bold text-lg text-indigo-900">Schedule</span>
+                </button>
+
+                <button onclick="nav('tasks')" class="tap-effect bg-orange-50/90 p-5 rounded-2xl flex flex-col items-center justify-center border-2 border-orange-100 shadow-sm backdrop-blur-sm">
+                    <div class="bg-orange-500 text-white w-12 h-12 rounded-full flex items-center justify-center mb-2 text-xl">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="font-bold text-lg text-orange-900">To-Do</span>
+                </button>
+            </div>
+            
+            <button onclick="nav('notes')" class="tap-effect bg-yellow-50/90 p-5 rounded-2xl flex items-center justify-center border-2 border-yellow-100 shadow-sm mt-4 w-full gap-3 backdrop-blur-sm">
+                <div class="bg-yellow-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <span class="font-bold text-lg text-yellow-900">My Journal</span>
+            </button>
+        </section>
+
+        <section id="wellness" class="page-section">
+            <h2 class="text-xl font-bold mb-3 text-pink-800">Relaxing Piano</h2>
+            <div class="video-wrapper shadow-lg mb-6">
+                <iframe width="560" height="315" 
+                    src="https://www.youtube.com/embed/3dhShorDjOg?controls=1&rel=0" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen
+                    referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+            </div>
+
+            <h2 class="text-xl font-bold mb-3 text-pink-800">Meditation & Breathing</h2>
+             <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-pink-400 mb-6">
+                <h3 class="font-bold text-lg mb-2">1 Minute Breathing</h3>
+                <p class="text-gray-600 mb-4">Breathe in for 4 seconds, hold for 4, exhale for 4.</p>
+                <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden relative">
+                    <div id="breath-bar" class="bg-pink-400 h-4 w-0 transition-all duration-[4000ms] ease-linear"></div>
+                </div>
+                <button onclick="startBreathing()" class="mt-4 w-full bg-pink-100 text-pink-800 font-bold py-3 rounded-xl tap-effect">Start Breathing Exercise</button>
+            </div>
+
+            <h2 class="text-xl font-bold mb-3 text-pink-800">Simple Exercises</h2>
+            <ul class="space-y-3">
+                <li class="bg-white p-4 rounded-xl shadow-sm flex items-center">
+                    <i class="fas fa-walking text-3xl text-pink-500 mr-4 w-10 text-center"></i>
+                    <span class="text-lg font-medium">10 Min Walk</span>
+                </li>
+                <li class="bg-white p-4 rounded-xl shadow-sm flex items-center">
+                    <i class="fas fa-chair text-3xl text-pink-500 mr-4 w-10 text-center"></i>
+                    <span class="text-lg font-medium">Chair Sit-to-Stand</span>
+                </li>
+            </ul>
+        </section>
+
+        <section id="schedule" class="page-section">
+            <div class="bg-indigo-100 border-l-4 border-indigo-500 p-4 mb-4 rounded-lg">
+                <p class="text-indigo-900 font-bold text-lg">Your Daily Routine</p>
+            </div>
+            <div id="schedule-list" class="space-y-4"></div>
+            <button onclick="openModal('schedule-modal')" class="fixed bottom-24 right-6 bg-indigo-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-indigo-700">
+                <i class="fas fa-plus"></i>
+            </button>
+        </section>
+
+        <section id="shop" class="page-section">
+            <div class="bg-lime-100 border-l-4 border-lime-500 p-4 mb-4 rounded-lg">
+                <p class="text-lime-900 font-bold text-lg">Items to buy</p>
+            </div>
+            <div id="shop-list" class="space-y-3"></div>
+            <button onclick="openModal('shop-modal')" class="fixed bottom-24 right-6 bg-lime-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-lime-700">
+                <i class="fas fa-cart-plus"></i>
+            </button>
+        </section>
+
+        <section id="meds" class="page-section">
+            <div id="med-list" class="space-y-4"></div>
+            <button onclick="openModal('med-modal')" class="fixed bottom-24 right-6 bg-blue-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-blue-700">
+                <i class="fas fa-plus"></i>
+            </button>
+        </section>
+
+        <section id="tasks" class="page-section">
+            <div id="task-list" class="space-y-3"></div>
+            <button onclick="openModal('task-modal')" class="fixed bottom-24 right-6 bg-orange-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-orange-600">
+                <i class="fas fa-plus"></i>
+            </button>
+        </section>
+
+        <section id="contacts" class="page-section">
+            <div class="bg-green-100 border-l-4 border-green-500 p-4 mb-4 rounded-lg">
+                <p class="text-green-900 font-bold text-lg">Tap name to call, Trash to delete.</p>
+            </div>
+            <div id="contact-list" class="grid grid-cols-1 gap-4"></div>
+            <button onclick="openModal('contact-modal')" class="fixed bottom-24 right-6 bg-green-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-green-700">
+                <i class="fas fa-user-plus"></i>
+            </button>
+        </section>
+
+        <section id="notes" class="page-section">
+            <div id="note-list" class="space-y-4"></div>
+            <button onclick="openModal('note-modal')" class="fixed bottom-24 right-6 bg-yellow-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-2xl tap-effect hover:bg-yellow-600">
+                <i class="fas fa-pen"></i>
+            </button>
+        </section>
+    </main>
+
+    <nav class="bg-white border-t border-gray-200 h-20 flex justify-around items-center px-2 z-20 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <button onclick="nav('home')" class="nav-btn text-teal-600 flex flex-col items-center w-full p-2 tap-effect active-nav" data-target="home">
+            <i class="fas fa-home text-2xl mb-1"></i>
+            <span class="text-xs font-bold">SilverAging</span>
+        </button>
+        <button onclick="nav('shop')" class="nav-btn text-gray-400 flex flex-col items-center w-full p-2 tap-effect" data-target="shop">
+            <i class="fas fa-shopping-cart text-2xl mb-1"></i>
+            <span class="text-xs font-bold">Shop</span>
+        </button>
+        <button onclick="nav('wellness')" class="nav-btn text-gray-400 flex flex-col items-center w-full p-2 tap-effect" data-target="wellness">
+            <i class="fas fa-heart text-2xl mb-1"></i>
+            <span class="text-xs font-bold">Health</span>
+        </button>
+        <button onclick="nav('contacts')" class="nav-btn text-gray-400 flex flex-col items-center w-full p-2 tap-effect" data-target="contacts">
+            <i class="fas fa-phone text-2xl mb-1"></i>
+            <span class="text-xs font-bold">Call</span>
+        </button>
+    </nav>
+
+    <div id="med-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">Add Medication</h3>
+            <input type="text" id="med-name" placeholder="Pill Name (e.g., Aspirin)" class="w-full p-4 mb-3 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <input type="time" id="med-time" class="w-full p-4 mb-3 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <input type="text" id="med-desc" placeholder="Instructions" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <div class="flex gap-3">
+                <button onclick="closeModal('med-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('meds')" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-green-800">Add Contact</h3>
+            <input type="text" id="contact-name" placeholder="Name (e.g., Son)" class="w-full p-4 mb-3 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <input type="tel" id="contact-phone" placeholder="Phone Number" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <div class="flex gap-3">
+                <button onclick="closeModal('contact-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('contacts')" class="flex-1 py-4 bg-green-600 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-orange-800">New Task</h3>
+            <input type="text" id="task-desc" placeholder="What needs doing?" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <div class="flex gap-3">
+                <button onclick="closeModal('task-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('tasks')" class="flex-1 py-4 bg-orange-500 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-lime-800">Add Item to Buy</h3>
+            <input type="text" id="shop-desc" placeholder="Item name (e.g. Milk)" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <div class="flex gap-3">
+                <button onclick="closeModal('shop-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('shop')" class="flex-1 py-4 bg-lime-600 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-800">Add to Schedule</h3>
+            <input type="text" id="sched-title" placeholder="Activity (e.g. Lunch)" class="w-full p-4 mb-3 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <input type="time" id="sched-time" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <div class="flex gap-3">
+                <button onclick="closeModal('schedule-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('schedule')" class="flex-1 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4 text-yellow-800">New Note</h3>
+            <input type="text" id="note-title" placeholder="Title" class="w-full p-4 mb-3 border-2 border-gray-300 rounded-xl text-lg text-gray-900">
+            <textarea id="note-body" placeholder="Write here..." rows="4" class="w-full p-4 mb-6 border-2 border-gray-300 rounded-xl text-lg text-gray-900"></textarea>
+            <div class="flex gap-3">
+                <button onclick="closeModal('note-modal')" class="flex-1 py-4 bg-gray-200 text-gray-800 rounded-xl font-bold text-lg">Cancel</button>
+                <button onclick="saveItem('notes')" class="flex-1 py-4 bg-yellow-600 text-white rounded-xl font-bold text-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
